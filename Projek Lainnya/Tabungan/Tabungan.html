@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tabungan Digital</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Georgia', serif;
+      background-color: #f8f5f0;
+      color: #2c2c2c;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e0dcd2;
+      position: relative;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      font-family: 'Georgia', serif;
+      color: #2e4a3c;
+      margin-bottom: 20px;
+    }
+
+    .saldo-box {
+      background-color: #f1ede5;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #d6d2c4;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .saldo-box h2 {
+      margin: 0;
+      font-size: 20px;
+      color: #3a5d4e;
+      font-weight: 600;
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      border: 1px solid #d3cfc5;
+      border-radius: 8px;
+      font-size: 14px;
+      background-color: #faf9f6;
+      color: #2c2c2c;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #b1aa95;
+    }
+
+    button {
+      padding: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #3f6b55;
+      color: white;
+      transition: background-color 0.25s ease;
+    }
+
+    button:hover {
+      background-color: #2e5141;
+    }
+
+    .riwayat {
+      margin-top: 30px;
+    }
+
+    .riwayat h3 {
+      font-family: 'Georgia', serif;
+      color: #4c4c4c;
+      font-size: 16px;
+      border-bottom: 1px solid #d6d2c4;
+      padding-bottom: 6px;
+      margin-bottom: 15px;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    li {
+      padding: 8px 12px;
+      border-left: 4px solid #3f6b55;
+      background-color: #f5f3ef;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    li button {
+      background-color: #e74c3c;
+      border: none;
+      color: white;
+      padding: 5px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    li button:hover {
+      background-color: #c0392b;
+    }
+
+    .reset-btn {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background-color: #e74c3c;
+      color: white;
+      padding: 4px 8px;
+      font-weight: 600;
+      font-size: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .reset-btn:hover {
+      background-color: #c0392b;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      .saldo-box h2 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tabungan Digital</h1>
+    <div class="saldo-box">
+      <h2>Saldo: <span id="saldo">Rp 0</span></h2>
+    </div>
+
+    <div class="form">
+      <input type="text" id="jumlah" placeholder="Masukkan jumlah" oninput="formatInput(this)" />
+      <button onclick="tambahSaldo()">Setor</button>
+      <button onclick="tarikSaldo()">Tarik</button>
+    </div>
+
+    <div class="riwayat">
+      <h3>Riwayat Transaksi</h3>
+      <ul id="riwayatList"></ul>
+    </div>
+
+    <!-- Reset Button -->
+    <button class="reset-btn" onclick="resetSaldo()">Reset</button>
+  </div>
+
+  <script>
+    let saldo = 0;
+    let riwayat = [];
+
+    function formatRupiah(angka) {
+      return angka.toLocaleString('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+    }
+
+    function updateSaldo() {
+      document.getElementById("saldo").innerText = formatRupiah(saldo);
+    }
+
+    function simpanData() {
+      localStorage.setItem('saldo', saldo);
+      localStorage.setItem('riwayat', JSON.stringify(riwayat));
+    }
+
+    function muatData() {
+      const simpananSaldo = localStorage.getItem('saldo');
+      const simpananRiwayat = localStorage.getItem('riwayat');
+
+      if (simpananSaldo !== null) {
+        saldo = parseInt(simpananSaldo);
+      }
+
+      if (simpananRiwayat !== null) {
+        riwayat = JSON.parse(simpananRiwayat);
+        riwayat.forEach(item => tambahRiwayat(item, false));
+      }
+    }
+
+    function tambahRiwayat(keterangan, simpan = true) {
+      const list = document.getElementById("riwayatList");
+      const item = document.createElement("li");
+      item.textContent = keterangan;
+
+      const cancelBtn = document.createElement("button");
+      cancelBtn.textContent = "Batalkan";
+      cancelBtn.style.display = "none";  // Batalkan tidak muncul di awal
+
+      cancelBtn.onclick = function () {
+        const index = riwayat.indexOf(keterangan);
+        if (index > -1) {
+          riwayat.splice(index, 1);  // Menghapus transaksi dari riwayat
+          if (keterangan.startsWith("Setor")) {
+            saldo -= parseInt(bersihkanFormat(keterangan.split(":")[1]));  // Mengurangi saldo
+          } else if (keterangan.startsWith("Tarik")) {
+            saldo += parseInt(bersihkanFormat(keterangan.split(":")[1]));  // Menambah saldo
+          }
+          updateSaldo();
+          list.removeChild(item);
+          simpanData();
+        }
+      };
+
+      item.appendChild(cancelBtn);
+      list.prepend(item);
+
+      // Menyembunyikan tombol batalkan dari riwayat yang sudah ditambahkan
+      item.onclick = function () {
+        cancelBtn.style.display = "block";  // Menampilkan tombol batalkan saat riwayat diklik
+      };
+
+      if (simpan) {
+        riwayat.unshift(keterangan);
+        simpanData();
+      }
+    }
+
+    function bersihkanFormat(input) {
+      return input.replace(/\./g, '').replace(/[^0-9]/g, '');
+    }
+
+    function tambahSaldo() {
+      const raw = document.getElementById("jumlah").value;
+      const clean = bersihkanFormat(raw);
+      const jumlah = parseInt(clean);
+      if (isNaN(jumlah) || jumlah <= 0) {
+        alert("Masukkan jumlah yang valid.");
+        return;
+      }
+      saldo += jumlah;
+      updateSaldo();
+      tambahRiwayat("Setor: " + formatRupiah(jumlah));
+      document.getElementById("jumlah").value = "";
+    }
+
+    function tarikSaldo() {
+      const raw = document.getElementById("jumlah").value;
+      const clean = bersihkanFormat(raw);
+      const jumlah = parseInt(clean);
+      if (isNaN(jumlah) || jumlah <= 0) {
+        alert("Masukkan jumlah yang valid.");
+        return;
+      }
+      if (jumlah > saldo) {
+        alert("Saldo tidak mencukupi.");
+        return;
+      }
+      saldo -= jumlah;
+      updateSaldo();
+      tambahRiwayat("Tarik: " + formatRupiah(jumlah));
+      document.getElementById("jumlah").value = "";
+    }
+
+    function formatInput(inputField) {
+      let value = inputField.value;
+      let clean = bersihkanFormat(value);
+      if (clean === '') {
+        inputField.value = '';
+        return;
+      }
+      let formatted = parseInt(clean).toLocaleString('id-ID');
+      inputField.value = formatted;
+    }
+
+    // Fungsi untuk reset saldo menjadi 0
+    function resetSaldo() {
+      if (confirm("Apakah Anda yakin ingin mengatur ulang saldo?")) {
+        saldo = 0;
+        riwayat = [];
+        updateSaldo();
+        simpanData();
+        document.getElementById("riwayatList").innerHTML = '';
+      }
+    }
+
+    // Inisialisasi saat pertama kali halaman dibuka
+    muatData();
+    updateSaldo();
+  </script>
+</body>
+</html>
