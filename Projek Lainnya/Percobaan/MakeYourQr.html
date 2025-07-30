@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Buat QRmu</title>
+  <link rel="stylesheet" href="StyleQr.css" />
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Buat QRmu</h1>
+    <input type="text" id="text" placeholder="Masukkan link atau data" />
+    <button onclick="generate()">Buat QR</button>
+    <br />
+    <canvas id="qrcode"></canvas>
+  </div>
+
+  <script src="ScriptQr.js"></script>
+</body>
+</html>
