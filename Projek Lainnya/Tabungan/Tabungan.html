@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tabungan Digital</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Tabungan Digital</h1>
+    <div class="saldo-box">
+      <h2>Saldo: <span id="saldo">Rp 0</span></h2>
+    </div>
+
+    <div class="form">
+      <input type="text" id="jumlah" placeholder="Masukkan jumlah" oninput="formatInput(this)" />
+      <button onclick="tambahSaldo()">Setor</button>
+      <button onclick="tarikSaldo()">Tarik</button>
+    </div>
+
+    <div class="riwayat">
+      <h3>Riwayat Transaksi</h3>
+      <ul id="riwayatList"></ul>
+    </div>
+
+    <button class="reset-btn" onclick="resetSaldo()">Reset</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
